@@ -1,0 +1,89 @@
+{
+  "name": "react-beautfiul-tree",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "jsnext:main": "dist/index.es.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "standard",
+    "format": "prettier-standard --format",
+    "test": "jest --coverage",
+    "storybook": "start-storybook -p 8000 -c .storybook"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.14.0",
+    "@storybook/react": "^6.2.9",
+    "@testing-library/jest-dom": "^5.12.0",
+    "@testing-library/react": "^11.2.6",
+    "@types/jest": "^26.0.23",
+    "@types/react": "^17.0.4",
+    "@types/react-beautiful-dnd": "^13.0.0",
+    "@types/react-dom": "^17.0.3",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.2.2",
+    "eslint": "^7.25.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-config-standard-react": "^11.0.1",
+    "eslint-plugin-flowtype": "^5.7.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-standard": "^5.0.0",
+    "jest": "^26.6.3",
+    "prettier": "^2.2.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "rollup": "^2.46.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "standard": "^16.0.3",
+    "standard-prettier": "^1.0.1",
+    "ts-jest": "^26.5.5",
+    "typescript": "^4.2.4"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom",
+    "testPathIgnorePatterns": [
+      "dist/"
+    ]
+  },
+  "standard": {
+    "ignore": [
+      "node_modules/",
+      "dist/"
+    ]
+  },
+  "peerDependencies": {
+    "react": "^16",
+    "react-dom": "^16"
+  },
+  "globals": [
+    "describe",
+    "it",
+    "test",
+    "expect",
+    "afterAll",
+    "jest"
+  ],
+  "dependencies": {
+    "css-box-model": "^1.2.1",
+    "react-beautiful-dnd": "^13.1.0"
+  }
+}
