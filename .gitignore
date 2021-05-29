@@ -1,3 +1,10 @@
+# Dependencies
 node_modules/
+
 coverage/
+
+# Build
 dist/
+
+# Site
+static

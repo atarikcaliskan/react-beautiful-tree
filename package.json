@@ -13,7 +13,8 @@
     "lint": "standard",
     "format": "prettier-standard --format",
     "test": "jest --coverage",
-    "storybook": "start-storybook -p 8000 -c .storybook"
+    "storybook": "start-storybook -p 8000 -c .storybook",
+    "build-storybook": "build-storybook -c .storybook -o static"
   },
   "keywords": [],
   "author": "",
