@@ -37,6 +37,9 @@ export type Props = {
   isDragEnabled: boolean | ((item: TreeItem) => boolean)
   /** Boolean to turn on hovering while dragging */
   isNestingEnabled: boolean
+
+  /** Boolean to turn on virtualization support */
+  isVirtualizationEnabled: boolean
 }
 
 export type State = {

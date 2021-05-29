@@ -1,4 +1,4 @@
-import { TreeData } from '../'
+import { TreeData } from '..'
 
 export const treeWithTwoBranches: TreeData = {
   rootId: '1',

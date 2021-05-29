@@ -1,4 +1,4 @@
-import { Component, ReactNode } from 'react'
+import React, { Component, ReactNode } from 'react'
 import {
   Draggable,
   Droppable,
@@ -11,11 +11,18 @@ import {
   DroppableProvided,
 } from 'react-beautiful-dnd'
 import { getBox } from 'css-box-model'
+import { areEqual, FixedSizeList } from 'react-window'
 import { calculateFinalDropPositions } from './Tree-utils'
 import { Props, State, DragState } from './Tree-types'
 import { noop } from '../../utils/handy'
 import { flattenTree, mutateTree } from '../../utils/tree'
-import { FlattenedItem, ItemId, Path, TreeData } from '../../types'
+import {
+  FlattenedItem,
+  FlattenedTree,
+  ItemId,
+  Path,
+  TreeData,
+} from '../../types'
 import TreeItem from '../TreeItem'
 import {
   getDestinationPath,
@@ -23,6 +30,39 @@ import {
   getIndexById,
 } from '../../utils/flat-tree'
 import DelayedFunction from '../../utils/delayed-function'
+
+// eslint-disable-next-line
+// @ts-ignore
+function getStyle ({ provided, style, isDragging }) {
+  const combined = {
+    ...style,
+    ...provided.draggableProps.style,
+  }
+
+  const marginBottom = 8
+  const withSpacing = {
+    ...combined,
+    height: isDragging ? combined.height : combined.height - marginBottom,
+    marginBottom,
+  }
+  return withSpacing
+}
+
+interface VirtualItemProps {
+  provided: DraggableProvided
+  snapshot: DraggableStateSnapshot
+  style?: object
+  isDragging?: boolean
+  flatItem: FlattenedItem
+}
+
+interface RowProps {
+  data: FlattenedTree
+  index: number
+  style: object
+  isDragging?: boolean
+  provided: DraggableProvided
+}
 
 export default class Tree extends Component<Props, State> {
   static defaultProps = {
@@ -35,6 +75,7 @@ export default class Tree extends Component<Props, State> {
     offsetPerLevel: 35,
     isDragEnabled: false,
     isNestingEnabled: false,
+    isVirtualizationEnabled: false,
   }
 
   state = {
@@ -78,6 +119,66 @@ export default class Tree extends Component<Props, State> {
     }
     return tree
   }
+
+  renderVirtualItem = ({
+    provided,
+    flatItem,
+    snapshot,
+    style,
+    isDragging,
+  }: VirtualItemProps) => {
+    const { renderItem, onExpand, onCollapse, offsetPerLevel } = this.props
+
+    const currentPath: Path = this.calculateEffectivePath(flatItem, snapshot)
+    if (snapshot.isDropAnimating) {
+      this.onDropAnimating()
+    }
+
+    return (
+      <TreeItem
+        key={flatItem.item.id}
+        item={flatItem.item}
+        path={currentPath}
+        style={getStyle({ provided, style, isDragging })}
+        onExpand={onExpand}
+        onCollapse={onCollapse}
+        renderItem={renderItem}
+        provided={provided}
+        snapshot={snapshot}
+        itemRef={this.setItemRef}
+        offsetPerLevel={offsetPerLevel}
+      />
+    )
+  }
+
+  renderVirtualRow = React.memo((props: RowProps) => {
+    const { data: items, index, style, isDragging } = props
+    const { isDragEnabled } = this.props
+    const flatItem = items[index]
+    const isDragDisabled =
+      typeof isDragEnabled === 'function'
+        ? !isDragEnabled(flatItem.item)
+        : !isDragEnabled
+
+    return (
+      <Draggable
+        draggableId={flatItem.item.id.toString()}
+        index={index}
+        isDragDisabled={isDragDisabled}
+        key={flatItem.item.id}
+      >
+        {(provided, snapshot) =>
+          this.renderVirtualItem({
+            snapshot,
+            provided,
+            flatItem,
+            style,
+            isDragging,
+          })
+        }
+      </Draggable>
+    )
+  }, areEqual)
 
   onDragStart = (result: DragStart) => {
     const { onDragStart } = this.props
@@ -278,6 +379,7 @@ export default class Tree extends Component<Props, State> {
     if (snapshot.isDropAnimating) {
       this.onDropAnimating()
     }
+
     return (
       <TreeItem
         key={flatItem.item.id}
@@ -295,7 +397,8 @@ export default class Tree extends Component<Props, State> {
   }
 
   render () {
-    const { isNestingEnabled } = this.props
+    const { isNestingEnabled, isVirtualizationEnabled } = this.props
+    const { flattenedTree } = this.state
     const renderedItems = this.renderItems()
 
     return (
@@ -308,12 +411,35 @@ export default class Tree extends Component<Props, State> {
           droppableId='tree'
           isCombineEnabled={isNestingEnabled}
           ignoreContainerClipping
+          mode={isVirtualizationEnabled ? 'virtual' : 'standard'}
+          renderClone={
+            isVirtualizationEnabled
+              ? (provided, snapshot, rubric) =>
+                  this.renderVirtualItem({
+                    provided,
+                    snapshot,
+                    flatItem: flattenedTree[rubric.source.index],
+                  })
+              : undefined
+          }
         >
           {(provided: DroppableProvided) => {
             const finalProvided: DroppableProvided = this.patchDroppableProvided(
               provided
             )
-            return (
+
+            return isVirtualizationEnabled ? (
+              <FixedSizeList
+                height={500}
+                itemCount={flattenedTree.length}
+                itemSize={20}
+                width={300}
+                outerRef={provided.innerRef}
+                itemData={flattenedTree}
+              >
+                {this.renderVirtualRow}
+              </FixedSizeList>
+            ) : (
               <div
                 ref={finalProvided.innerRef}
                 style={{ pointerEvents: 'auto' }}
