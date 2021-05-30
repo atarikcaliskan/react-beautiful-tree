@@ -44,6 +44,7 @@ export default class Tree extends Component<Props, State> {
     isDragEnabled: false,
     isNestingEnabled: false,
     isVirtualizationEnabled: false,
+    virtualItemHeight: 20,
   }
 
   state = {
@@ -362,7 +363,11 @@ export default class Tree extends Component<Props, State> {
   }
 
   render() {
-    const { isNestingEnabled, isVirtualizationEnabled } = this.props
+    const {
+      isNestingEnabled,
+      isVirtualizationEnabled,
+      virtualItemHeight,
+    } = this.props
     const { flattenedTree } = this.state
     const renderedItems = this.renderItems()
 
@@ -399,7 +404,7 @@ export default class Tree extends Component<Props, State> {
                   <FixedSizeList
                     height={height}
                     itemCount={flattenedTree.length}
-                    itemSize={20}
+                    itemSize={virtualItemHeight}
                     width={width}
                     outerRef={provided.innerRef}
                     itemData={flattenedTree}

@@ -40,9 +40,11 @@ export type Props = {
   isDragEnabled: boolean | ((item: TreeItem) => boolean)
   /** Boolean to turn on hovering while dragging */
   isNestingEnabled: boolean
-
   /** Boolean to turn on virtualization support */
   isVirtualizationEnabled: boolean
+
+  /** Virtual item's height. If the isVirtualizationEnabled is true, please set it manually. */
+  virtualItemHeight: number
 }
 
 export type State = {
