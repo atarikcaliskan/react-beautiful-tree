@@ -74,7 +74,6 @@ export const DefaultTree: React.FC = () => {
       renderItem={renderItem}
       onExpand={onExpand}
       isDragEnabled
-      isNestingEnabled
       onDragEnd={onDragEnd}
       offsetPerLevel={16}
       onCollapse={onCollapse}
@@ -108,7 +107,6 @@ export const VirtualTree: React.FC = () => {
       renderItem={renderItem}
       onExpand={onExpand}
       isDragEnabled
-      isNestingEnabled
       isVirtualizationEnabled
       onDragEnd={onDragEnd}
       offsetPerLevel={16}

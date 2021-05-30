@@ -13,16 +13,17 @@ import {
 import { getBox } from 'css-box-model'
 import { areEqual, FixedSizeList } from 'react-window'
 import { calculateFinalDropPositions } from './Tree-utils'
-import { Props, State, DragState } from './Tree-types'
+import {
+  Props,
+  State,
+  DragState,
+  VirtualItemProps,
+  VirtualRowProps,
+  VirtualItemStyle,
+} from './Tree-types'
 import { noop } from '../../utils/handy'
 import { flattenTree, mutateTree } from '../../utils/tree'
-import {
-  FlattenedItem,
-  FlattenedTree,
-  ItemId,
-  Path,
-  TreeData,
-} from '../../types'
+import { FlattenedItem, ItemId, Path, TreeData } from '../../types'
 import TreeItem from '../TreeItem'
 import {
   getDestinationPath,
@@ -31,9 +32,7 @@ import {
 } from '../../utils/flat-tree'
 import DelayedFunction from '../../utils/delayed-function'
 
-// eslint-disable-next-line
-// @ts-ignore
-function getStyle ({ provided, style, isDragging }) {
+function getStyle ({ provided, style, isDragging }: VirtualItemStyle) {
   const combined = {
     ...style,
     ...provided.draggableProps.style,
@@ -42,26 +41,12 @@ function getStyle ({ provided, style, isDragging }) {
   const marginBottom = 8
   const withSpacing = {
     ...combined,
-    height: isDragging ? combined.height : combined.height - marginBottom,
+    height: isDragging
+      ? combined.height
+      : Number(combined.height) - marginBottom,
     marginBottom,
   }
   return withSpacing
-}
-
-interface VirtualItemProps {
-  provided: DraggableProvided
-  snapshot: DraggableStateSnapshot
-  style?: object
-  isDragging?: boolean
-  flatItem: FlattenedItem
-}
-
-interface RowProps {
-  data: FlattenedTree
-  index: number
-  style: object
-  isDragging?: boolean
-  provided: DraggableProvided
 }
 
 export default class Tree extends Component<Props, State> {
@@ -151,7 +136,7 @@ export default class Tree extends Component<Props, State> {
     )
   }
 
-  renderVirtualRow = React.memo((props: RowProps) => {
+  renderVirtualRow = React.memo((props: VirtualRowProps) => {
     const { data: items, index, style, isDragging } = props
     const { isDragEnabled } = this.props
     const flatItem = items[index]
