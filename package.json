@@ -1,7 +1,7 @@
 {
-  "name": "react-beautfiul-tree",
-  "version": "1.0.0",
-  "description": "",
+  "name": "react-beautiful-tree",
+  "version": "1.0.1",
+  "description": "Beautiful tree component for your apps!",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
@@ -17,8 +17,8 @@
     "build-storybook": "build-storybook -c .storybook -o static"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Tarik Caliskan",
+  "license": "UNLICENSED",
   "devDependencies": {
     "@babel/core": "^7.14.0",
     "@storybook/react": "^6.2.9",
@@ -90,5 +90,16 @@
     "react-beautiful-dnd": "^13.1.0",
     "react-virtualized-auto-sizer": "^1.0.5",
     "react-window": "^1.8.6"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tarikcaliskan/react-beautiful-tree.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tarikcaliskan/react-beautiful-tree/issues"
+  },
+  "homepage": "https://github.com/tarikcaliskan/react-beautiful-tree#readme"
 }

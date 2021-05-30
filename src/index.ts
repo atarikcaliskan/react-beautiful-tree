@@ -1,7 +1,6 @@
-export { default } from './components/Tree'
-
-export { RenderItemParams } from './components/TreeItem/TreeItem-types'
-export {
+import Tree from './components/Tree'
+import { RenderItemParams } from './components/TreeItem/TreeItem-types'
+import {
   ItemId,
   Path,
   TreeData,
@@ -9,6 +8,19 @@ export {
   TreeSourcePosition,
   TreeDestinationPosition,
 } from './types'
+import { mutateTree, moveItemOnTree } from './utils/tree'
+import { Header } from './components/Header'
 
-export { mutateTree, moveItemOnTree } from './utils/tree'
-export { Header } from './components/Header'
+export {
+  Tree,
+  RenderItemParams,
+  ItemId,
+  Path,
+  TreeData,
+  TreeItem,
+  TreeSourcePosition,
+  TreeDestinationPosition,
+  mutateTree,
+  moveItemOnTree,
+  Header,
+}

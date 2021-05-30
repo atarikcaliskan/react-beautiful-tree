@@ -1,5 +1,6 @@
 import React, { Component, KeyboardEvent } from 'react'
-import Tree, {
+import {
+  Tree,
   mutateTree,
   RenderItemParams,
   TreeItem,

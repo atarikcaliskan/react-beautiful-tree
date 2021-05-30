@@ -7,6 +7,8 @@ import pkg from './package.json'
 
 export default {
   input: 'src/index.ts',
+  external: ['react-redux'],
+  globals: { 'react-redux': 'react-redux' },
   output: [
     {
       file: pkg.main,
