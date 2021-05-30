@@ -1,6 +1,6 @@
 {
   "name": "react-beautiful-tree",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Beautiful tree component for your apps!",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -18,7 +18,7 @@
   },
   "keywords": [],
   "author": "Tarik Caliskan",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@babel/core": "^7.14.0",
     "@storybook/react": "^6.2.9",
