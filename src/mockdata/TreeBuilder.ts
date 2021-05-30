@@ -1,4 +1,4 @@
-import { ItemId, TreeItem } from '../src/types'
+import { ItemId, TreeItem } from '../types'
 
 export default class TreeBuilder {
   rootId: ItemId

@@ -16,6 +16,7 @@ export default class TreeItem extends Component<Props> {
         'snapshot',
         'onCollapse',
         'onExpand',
+        'style',
       ]) || !isSamePath(this.props.path, nextProps.path)
     )
   }
@@ -24,7 +25,7 @@ export default class TreeItem extends Component<Props> {
     draggableProps: DraggableProvidedDraggableProps,
     snapshot: DraggableStateSnapshot
   ): DraggableProvidedDraggableProps => {
-    const { path, offsetPerLevel } = this.props
+    const { path, offsetPerLevel, style } = this.props
 
     const transitions =
       draggableProps.style && draggableProps.style.transition
@@ -45,6 +46,7 @@ export default class TreeItem extends Component<Props> {
         paddingLeft: (path.length - 1) * offsetPerLevel,
         // @ts-ignore
         transition,
+        ...style,
       },
     }
   }

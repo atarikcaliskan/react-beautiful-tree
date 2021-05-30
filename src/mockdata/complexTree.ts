@@ -1,4 +1,4 @@
-import { TreeData } from '../src/types'
+import { TreeData } from '../types'
 import TreeBuilder from './TreeBuilder'
 
 export const complexTree: TreeData = new TreeBuilder(1)

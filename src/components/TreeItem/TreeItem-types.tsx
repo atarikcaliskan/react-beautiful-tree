@@ -42,4 +42,5 @@ export type Props = {
   snapshot: DraggableStateSnapshot
   itemRef: (itemId: ItemId, element: HTMLElement | null) => void
   offsetPerLevel: number
+  style?: React.CSSProperties
 }

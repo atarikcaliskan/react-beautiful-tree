@@ -1,4 +1,4 @@
-import { Component, ReactNode } from 'react'
+import React, { Component, ReactNode } from 'react'
 import {
   Draggable,
   Droppable,
@@ -11,8 +11,15 @@ import {
   DroppableProvided,
 } from 'react-beautiful-dnd'
 import { getBox } from 'css-box-model'
-import { calculateFinalDropPositions } from './Tree-utils'
-import { Props, State, DragState } from './Tree-types'
+import { areEqual, FixedSizeList } from 'react-window'
+import { calculateFinalDropPositions, getVirtualItemStyle } from './Tree-utils'
+import {
+  Props,
+  State,
+  DragState,
+  VirtualItemProps,
+  VirtualRowProps,
+} from './Tree-types'
 import { noop } from '../../utils/handy'
 import { flattenTree, mutateTree } from '../../utils/tree'
 import { FlattenedItem, ItemId, Path, TreeData } from '../../types'
@@ -23,6 +30,7 @@ import {
   getIndexById,
 } from '../../utils/flat-tree'
 import DelayedFunction from '../../utils/delayed-function'
+import AutoSizer from 'react-virtualized-auto-sizer'
 
 export default class Tree extends Component<Props, State> {
   static defaultProps = {
@@ -35,6 +43,8 @@ export default class Tree extends Component<Props, State> {
     offsetPerLevel: 35,
     isDragEnabled: false,
     isNestingEnabled: false,
+    isVirtualizationEnabled: false,
+    virtualItemHeight: 20,
   }
 
   state = {
@@ -53,7 +63,7 @@ export default class Tree extends Component<Props, State> {
 
   expandTimer = new DelayedFunction(500)
 
-  static getDerivedStateFromProps (props: Props, state: State) {
+  static getDerivedStateFromProps(props: Props, state: State) {
     const { draggedItemId } = state
     const { tree } = props
 
@@ -66,10 +76,7 @@ export default class Tree extends Component<Props, State> {
     }
   }
 
-  static closeParentIfNeeded (
-    tree: TreeData,
-    draggedItemId?: ItemId
-  ): TreeData {
+  static closeParentIfNeeded(tree: TreeData, draggedItemId?: ItemId): TreeData {
     if (!!draggedItemId) {
       // Closing parent internally during dragging, because visually we can only move one item not a subtree
       return mutateTree(tree, draggedItemId, {
@@ -78,6 +85,66 @@ export default class Tree extends Component<Props, State> {
     }
     return tree
   }
+
+  renderVirtualItem = ({
+    provided,
+    flatItem,
+    snapshot,
+    style,
+    isDragging,
+  }: VirtualItemProps) => {
+    const { renderItem, onExpand, onCollapse, offsetPerLevel } = this.props
+
+    const currentPath: Path = this.calculateEffectivePath(flatItem, snapshot)
+    if (snapshot.isDropAnimating) {
+      this.onDropAnimating()
+    }
+
+    return (
+      <TreeItem
+        key={flatItem.item.id}
+        item={flatItem.item}
+        path={currentPath}
+        style={getVirtualItemStyle({ provided, style, isDragging })}
+        onExpand={onExpand}
+        onCollapse={onCollapse}
+        renderItem={renderItem}
+        provided={provided}
+        snapshot={snapshot}
+        itemRef={this.setItemRef}
+        offsetPerLevel={offsetPerLevel}
+      />
+    )
+  }
+
+  renderVirtualRow = React.memo((props: VirtualRowProps) => {
+    const { data: items, index, style, isDragging } = props
+    const { isDragEnabled } = this.props
+    const flatItem = items[index]
+    const isDragDisabled =
+      typeof isDragEnabled === 'function'
+        ? !isDragEnabled(flatItem.item)
+        : !isDragEnabled
+
+    return (
+      <Draggable
+        draggableId={flatItem.item.id.toString()}
+        index={index}
+        isDragDisabled={isDragDisabled}
+        key={flatItem.item.id}
+      >
+        {(provided, snapshot) =>
+          this.renderVirtualItem({
+            snapshot,
+            provided,
+            flatItem,
+            style,
+            isDragging,
+          })
+        }
+      </Draggable>
+    )
+  }, areEqual)
 
   onDragStart = (result: DragStart) => {
     const { onDragStart } = this.props
@@ -278,6 +345,7 @@ export default class Tree extends Component<Props, State> {
     if (snapshot.isDropAnimating) {
       this.onDropAnimating()
     }
+
     return (
       <TreeItem
         key={flatItem.item.id}
@@ -294,8 +362,13 @@ export default class Tree extends Component<Props, State> {
     )
   }
 
-  render () {
-    const { isNestingEnabled } = this.props
+  render() {
+    const {
+      isNestingEnabled,
+      isVirtualizationEnabled,
+      virtualItemHeight,
+    } = this.props
+    const { flattenedTree } = this.state
     const renderedItems = this.renderItems()
 
     return (
@@ -305,15 +378,42 @@ export default class Tree extends Component<Props, State> {
         onDragUpdate={this.onDragUpdate}
       >
         <Droppable
-          droppableId='tree'
+          droppableId="tree"
           isCombineEnabled={isNestingEnabled}
           ignoreContainerClipping
+          mode={isVirtualizationEnabled ? 'virtual' : 'standard'}
+          renderClone={
+            isVirtualizationEnabled
+              ? (provided, snapshot, rubric) =>
+                  this.renderVirtualItem({
+                    provided,
+                    snapshot,
+                    flatItem: flattenedTree[rubric.source.index],
+                  })
+              : undefined
+          }
         >
           {(provided: DroppableProvided) => {
             const finalProvided: DroppableProvided = this.patchDroppableProvided(
               provided
             )
-            return (
+
+            return isVirtualizationEnabled ? (
+              <AutoSizer defaultHeight={1} defaultWidth={1}>
+                {({ height, width }: { height: number; width: number }) => (
+                  <FixedSizeList
+                    height={height}
+                    itemCount={flattenedTree.length}
+                    itemSize={virtualItemHeight}
+                    width={width}
+                    outerRef={provided.innerRef}
+                    itemData={flattenedTree}
+                  >
+                    {this.renderVirtualRow}
+                  </FixedSizeList>
+                )}
+              </AutoSizer>
+            ) : (
               <div
                 ref={finalProvided.innerRef}
                 style={{ pointerEvents: 'auto' }}

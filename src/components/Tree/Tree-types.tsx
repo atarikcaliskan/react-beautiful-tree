@@ -3,6 +3,8 @@ import {
   DraggableLocation,
   DraggableId,
   DroppableId,
+  DraggableProvided,
+  DraggableStateSnapshot,
 } from 'react-beautiful-dnd'
 import {
   TreeData,
@@ -12,6 +14,7 @@ import {
   TreeSourcePosition,
   TreeDestinationPosition,
   TreeItem,
+  FlattenedItem,
 } from '../../types'
 import { RenderItemParams } from '../TreeItem/TreeItem-types'
 
@@ -37,6 +40,11 @@ export type Props = {
   isDragEnabled: boolean | ((item: TreeItem) => boolean)
   /** Boolean to turn on hovering while dragging */
   isNestingEnabled: boolean
+  /** Boolean to turn on virtualization support */
+  isVirtualizationEnabled: boolean
+
+  /** Virtual item's height. If the isVirtualizationEnabled is true, please set it manually. */
+  virtualItemHeight: number
 }
 
 export type State = {
@@ -62,4 +70,26 @@ export type DragState = {
   horizontalLevel?: number
   // Combine for nesting operation
   combine?: Combine
+}
+
+export interface VirtualItemProps {
+  provided: DraggableProvided
+  snapshot: DraggableStateSnapshot
+  style?: React.CSSProperties
+  isDragging?: boolean
+  flatItem: FlattenedItem
+}
+
+export interface VirtualRowProps {
+  data: FlattenedTree
+  index: number
+  style: React.CSSProperties
+  isDragging?: boolean
+  provided: DraggableProvided
+}
+
+export interface VirtualItemStyle {
+  provided: DraggableProvided
+  style?: React.CSSProperties
+  isDragging?: boolean
 }
