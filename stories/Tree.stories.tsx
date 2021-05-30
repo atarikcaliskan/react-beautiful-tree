@@ -102,15 +102,17 @@ export const VirtualTree: React.FC = () => {
   }
 
   return (
-    <Tree
-      tree={tree}
-      renderItem={renderItem}
-      onExpand={onExpand}
-      isDragEnabled
-      isVirtualizationEnabled
-      onDragEnd={onDragEnd}
-      offsetPerLevel={16}
-      onCollapse={onCollapse}
-    />
+    <div style={{ height: '100vh', width: '100%' }}>
+      <Tree
+        tree={tree}
+        renderItem={renderItem}
+        onExpand={onExpand}
+        isDragEnabled
+        isVirtualizationEnabled
+        onDragEnd={onDragEnd}
+        offsetPerLevel={16}
+        onCollapse={onCollapse}
+      />
+    </div>
   )
 }

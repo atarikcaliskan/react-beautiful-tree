@@ -1,4 +1,4 @@
-import { DragState } from './Tree-types'
+import { DragState, VirtualItemStyle } from './Tree-types'
 import { getTreePosition } from '../../utils/tree'
 import { getDestinationPath, getSourcePath } from '../../utils/flat-tree'
 import {
@@ -47,4 +47,25 @@ export const calculateFinalDropPositions = (
     ...getTreePosition(tree, destinationPath),
   }
   return { sourcePosition, destinationPosition }
+}
+
+export function getVirtualItemStyle({
+  provided,
+  style,
+  isDragging,
+}: VirtualItemStyle) {
+  const combined = {
+    ...style,
+    ...provided.draggableProps.style,
+  }
+
+  const marginBottom = 8
+  const withSpacing = {
+    ...combined,
+    height: isDragging
+      ? combined.height
+      : Number(combined.height) - marginBottom,
+    marginBottom,
+  }
+  return withSpacing
 }

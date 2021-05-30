@@ -12,14 +12,13 @@ import {
 } from 'react-beautiful-dnd'
 import { getBox } from 'css-box-model'
 import { areEqual, FixedSizeList } from 'react-window'
-import { calculateFinalDropPositions } from './Tree-utils'
+import { calculateFinalDropPositions, getVirtualItemStyle } from './Tree-utils'
 import {
   Props,
   State,
   DragState,
   VirtualItemProps,
   VirtualRowProps,
-  VirtualItemStyle,
 } from './Tree-types'
 import { noop } from '../../utils/handy'
 import { flattenTree, mutateTree } from '../../utils/tree'
@@ -31,23 +30,7 @@ import {
   getIndexById,
 } from '../../utils/flat-tree'
 import DelayedFunction from '../../utils/delayed-function'
-
-function getStyle ({ provided, style, isDragging }: VirtualItemStyle) {
-  const combined = {
-    ...style,
-    ...provided.draggableProps.style,
-  }
-
-  const marginBottom = 8
-  const withSpacing = {
-    ...combined,
-    height: isDragging
-      ? combined.height
-      : Number(combined.height) - marginBottom,
-    marginBottom,
-  }
-  return withSpacing
-}
+import AutoSizer from 'react-virtualized-auto-sizer'
 
 export default class Tree extends Component<Props, State> {
   static defaultProps = {
@@ -79,7 +62,7 @@ export default class Tree extends Component<Props, State> {
 
   expandTimer = new DelayedFunction(500)
 
-  static getDerivedStateFromProps (props: Props, state: State) {
+  static getDerivedStateFromProps(props: Props, state: State) {
     const { draggedItemId } = state
     const { tree } = props
 
@@ -92,10 +75,7 @@ export default class Tree extends Component<Props, State> {
     }
   }
 
-  static closeParentIfNeeded (
-    tree: TreeData,
-    draggedItemId?: ItemId
-  ): TreeData {
+  static closeParentIfNeeded(tree: TreeData, draggedItemId?: ItemId): TreeData {
     if (!!draggedItemId) {
       // Closing parent internally during dragging, because visually we can only move one item not a subtree
       return mutateTree(tree, draggedItemId, {
@@ -124,7 +104,7 @@ export default class Tree extends Component<Props, State> {
         key={flatItem.item.id}
         item={flatItem.item}
         path={currentPath}
-        style={getStyle({ provided, style, isDragging })}
+        style={getVirtualItemStyle({ provided, style, isDragging })}
         onExpand={onExpand}
         onCollapse={onCollapse}
         renderItem={renderItem}
@@ -381,7 +361,7 @@ export default class Tree extends Component<Props, State> {
     )
   }
 
-  render () {
+  render() {
     const { isNestingEnabled, isVirtualizationEnabled } = this.props
     const { flattenedTree } = this.state
     const renderedItems = this.renderItems()
@@ -393,7 +373,7 @@ export default class Tree extends Component<Props, State> {
         onDragUpdate={this.onDragUpdate}
       >
         <Droppable
-          droppableId='tree'
+          droppableId="tree"
           isCombineEnabled={isNestingEnabled}
           ignoreContainerClipping
           mode={isVirtualizationEnabled ? 'virtual' : 'standard'}
@@ -414,16 +394,20 @@ export default class Tree extends Component<Props, State> {
             )
 
             return isVirtualizationEnabled ? (
-              <FixedSizeList
-                height={500}
-                itemCount={flattenedTree.length}
-                itemSize={20}
-                width={300}
-                outerRef={provided.innerRef}
-                itemData={flattenedTree}
-              >
-                {this.renderVirtualRow}
-              </FixedSizeList>
+              <AutoSizer defaultHeight={1} defaultWidth={1}>
+                {({ height, width }: { height: number; width: number }) => (
+                  <FixedSizeList
+                    height={height}
+                    itemCount={flattenedTree.length}
+                    itemSize={20}
+                    width={width}
+                    outerRef={provided.innerRef}
+                    itemData={flattenedTree}
+                  >
+                    {this.renderVirtualRow}
+                  </FixedSizeList>
+                )}
+              </AutoSizer>
             ) : (
               <div
                 ref={finalProvided.innerRef}
