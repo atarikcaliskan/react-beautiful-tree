@@ -5,7 +5,7 @@
 <h1 align="center">react-beautiful-tree</h1>
 
 <div align="center">
-<p align="center">Beautiful tree component for your apps!</p>
+<p align="center">Beautiful tree component for your React apps!</p>
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/39676c3d-6f09-47bb-a1ba-cc49d658dcb6/deploy-status)](https://app.netlify.com/sites/react-beautiful-tree/deploys)
 <a href="https://bundlephobia.com/result?p=react-beautiful-tree@latest" target="\_parent">
