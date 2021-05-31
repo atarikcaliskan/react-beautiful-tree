@@ -1,7 +1,7 @@
 {
   "name": "react-beautiful-tree",
-  "version": "1.0.2",
-  "description": "Beautiful tree component for your apps!",
+  "version": "1.0.3",
+  "description": "Beautiful tree component for your React apps!",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
