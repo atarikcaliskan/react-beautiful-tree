@@ -1,6 +1,6 @@
 
 <p align="center">
-<img src="https://imgur.com/iXzPNYT.png" alt="Logo" />
+<img src="https://imgur.com/gm2JDXw.png" alt="Logo" />
 </p>
 <h1 align="center">react-beautiful-tree</h1>
 
